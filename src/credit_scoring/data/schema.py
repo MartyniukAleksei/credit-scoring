@@ -1,5 +1,5 @@
 import pandera.pandas as pa
-from pandera import Column,  Check, DataFrameSchema
+from pandera.pandas import Column,  Check, DataFrameSchema
 
 DEBT_RATIO_CAP=2.5
 REVOLVING_UTIL_CAP=10

@@ -1,6 +1,6 @@
 import pandas as pd
 import logging
-
+from credit_scoring.paths import DATA_RAW, DATA_PROCESSED
 logger = logging.getLogger(__name__)
 
 def prepare_dataset(df: pd.DataFrame) -> pd.DataFrame:
@@ -16,6 +16,6 @@ def prepare_dataset(df: pd.DataFrame) -> pd.DataFrame:
     
     
 if __name__ == '__main__': 
-    raw = pd.read_csv("../data/raw/cs-training.csv")
+    raw = pd.read_csv(DATA_RAW / "cs-training.csv", index_col=0)
     clean = prepare_dataset(raw)
-    clean.to_csv("..data/precessed/cs-training-clean.csv", index=False)
+    clean.to_csv(DATA_PROCESSED / "cs-training-clean.csv", index=False)
