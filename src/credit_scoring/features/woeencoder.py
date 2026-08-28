@@ -79,7 +79,7 @@ class WOEEncoder(BaseEstimator, TransformerMixin):
         return self
                 
     def _discrete_bin_label(self, col: str, value) -> object:
-        sentinels = self.sentinel_values.get(col, [])
+        sentinels = (self.sentinel_values or {}).get(col, [])
         if value in sentinels:
             return "sentinel"
         if value < self.discrete_tail_threshold:

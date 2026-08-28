@@ -1,6 +1,6 @@
-from sklearn.base import BaseEstimator, TransformerMixin
 import pandas as pd
 from typing import Self
+from sklearn.base import BaseEstimator, TransformerMixin
 
 class Clipper(BaseEstimator, TransformerMixin):
     def __init__(self, columns: list[str], upper_quantile: float = 0.99):
@@ -9,6 +9,7 @@ class Clipper(BaseEstimator, TransformerMixin):
         
     def fit(self, X: pd.DataFrame, y=None) -> Self:
         self.upper_bounds_: dict[str, float] = {} # its important to create var here, not in __init__
+        # because object with _ have to appear after fit
         for col in self.columns:
             self.upper_bounds_[col] = X[col].quantile(self.upper_quantile)
         
