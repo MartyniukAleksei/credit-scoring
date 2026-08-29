@@ -6,6 +6,9 @@ from sklearn.metrics import roc_auc_score, average_precision_score
 from lightgbm import LGBMClassifier
 from credit_scoring.features.clipper import Clipper
 from credit_scoring.models.pipeline import load_data, split_data
+import joblib
+from pathlib import Path
+from credit_scoring.paths import PROJECT_ROOT
 
 def objective(trial: optuna.Trial, X: pd.DataFrame, y: pd.Series) -> float:
     params = {
@@ -51,3 +54,14 @@ if __name__ == "__main__":
         pr_auc = average_precision_score(y_part, pred)
         print(f"Model {name}: fits OK | ROC-AUC={roc:.3f} | PR-AUC={pr_auc:.3f}")
     
+    Path("models").mkdir(exist_ok=True)
+    model_path= PROJECT_ROOT / "models/lgbm_pipeline.joblib"
+    
+    joblib.dump(final_lgbm, model_path)
+    print(f"Saved to {model_path}")
+    
+    loaded = joblib.load(model_path)
+    loaded_preds = loaded.predict_proba(X_test)[:, 1]
+    original_preds = final_lgbm.predict_proba(X_test)[:, 1]
+    assert (loaded_preds == original_preds).all(), "predictions before and after have to be equal"
+    print("Round-trip OK: predictions are identic")
