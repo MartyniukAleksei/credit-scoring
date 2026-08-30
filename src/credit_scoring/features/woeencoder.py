@@ -91,7 +91,7 @@ class WOEEncoder(BaseEstimator, TransformerMixin):
 
         for col in self.quantile_columns:
             binned = pd.cut(X[col], bins=self.bin_edges_[col], include_lowest=True)
-            X[col] = binned.map(self.woe_maps_[col]).fillna(self.default_woe_[col])
+            X[col] = binned.map(self.woe_maps_[col]).astype(float).fillna(self.default_woe_[col])
 
         for col in self.discrete_columns:
             binned = X[col].apply(lambda v: self._discrete_bin_label(col, v))
