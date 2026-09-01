@@ -1,0 +1,4 @@
+[core]
+    remote = storage
+['remote "storage"']
+    url = /Users/alekseimartyniuk/Developer/ai_ml_education/dvc-storage
