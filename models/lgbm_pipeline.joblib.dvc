@@ -1,0 +1,5 @@
+outs:
+- md5: 42c2a0542ff46c33c812cc368cf42579
+  size: 556805
+  hash: md5
+  path: lgbm_pipeline.joblib

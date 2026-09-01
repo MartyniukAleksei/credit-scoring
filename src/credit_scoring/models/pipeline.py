@@ -17,7 +17,7 @@ def load_data() -> tuple[pd.DataFrame, pd.Series]:
     df = pd.read_csv(DATA_RAW / "cs-training.csv", index_col=0)
     
     df = prepare_dataset(df)
-    df = train_schema.validate(df)#pandera returns new df with needed types
+    df = train_schema.validate(df) # pandera returns new df with needed types
     
     y = df['SeriousDlqin2yrs']
     X = df.drop(columns=['SeriousDlqin2yrs'])
@@ -56,11 +56,12 @@ def build_logreg_pipeline() -> Pipeline:
     ])
     
     return logreg_pipeline
-    
-def build_lgbm_pipeline() -> Pipeline:
+
+def build_lgbm_pipeline(params: dict | None = None) -> Pipeline:
+    params = params or {}
     lgbm_pipeline = Pipeline([
         ("clip", Clipper(columns=["DebtRatio", "RevolvingUtilizationOfUnsecuredLines"])),
-        ("model", LGBMClassifier()),
+        ("model", LGBMClassifier(**params)),
     ])
     
     return lgbm_pipeline

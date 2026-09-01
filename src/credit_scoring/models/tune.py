@@ -54,7 +54,7 @@ if __name__ == "__main__":
         pr_auc = average_precision_score(y_part, pred)
         print(f"Model {name}: fits OK | ROC-AUC={roc:.3f} | PR-AUC={pr_auc:.3f}")
     
-    Path("models").mkdir(exist_ok=True)
+    Path(PROJECT_ROOT / "models").mkdir(exist_ok=True)
     model_path= PROJECT_ROOT / "models/lgbm_pipeline.joblib"
     
     joblib.dump(final_lgbm, model_path)

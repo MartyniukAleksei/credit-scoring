@@ -14,8 +14,14 @@ dist/
 # данные — не коммитим сами файлы
 data/raw/*
 data/processed/*
+!data/raw/*.dvc
+!data/processed/*.dvc
 !data/raw/.gitkeep
 !data/processed/.gitkeep
+
+# models
+models/*
+!models/*.dvc
 
 # jupyter
 .ipynb_checkpoints/
