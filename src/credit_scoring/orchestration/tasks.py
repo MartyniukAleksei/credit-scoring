@@ -95,7 +95,7 @@ def credit_scoring_flow():
     best_params = tune(X_train, y_train, 30)
     model = train(X_train, y_train, 'lgbm', best_params)
     metrics = evaluate(model, X_test, y_test)
-    was_saved = register(model, metrics, Path(PROJECT_ROOT / "models/model_pipeline.joblib"))
+    was_saved = register(model, metrics, Path(PROJECT_ROOT / "models/lgbm_pipeline.joblib"))
     print(f"Saving was {was_saved}")
     
 if __name__ == "__main__":
