@@ -27,3 +27,4 @@ class BorrowerFeatures(BaseModel):
     number_of_dependents: float | None = Field(
         default=None, alias="NumberOfDependents", ge=0
     )
+    
