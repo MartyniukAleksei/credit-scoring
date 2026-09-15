@@ -1,7 +1,7 @@
 import pandas as pd
 import joblib
 from fastapi import FastAPI, status
-from credit_scoring.paths import PROJECT_ROOT
+from credit_scoring.paths import MODEL_PATH
 from credit_scoring.api.schemas import BorrowerFeatures
 import shap 
 
@@ -13,7 +13,6 @@ def explain_denial(shap_values_row, feature_names, top_k=4):
     risk_factors.sort(key=lambda x: -x[1])
     return risk_factors[:top_k]
 
-MODEL_PATH = PROJECT_ROOT / 'models/lgbm_pipeline.joblib'
 pipeline = joblib.load(MODEL_PATH)
 clip_step = pipeline.named_steps["clip"]
 model = pipeline.named_steps["model"]
