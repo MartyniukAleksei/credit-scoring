@@ -11,6 +11,11 @@ dependencies = [
     "pandas",
     "numpy",
     "scikit-learn",
+    "lightgbm",
+    "shap",
+    "fastapi",
+    "pydantic",
+    "uvicorn[standard]",
 ]
 
 [project.optional-dependencies]
