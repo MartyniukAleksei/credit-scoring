@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Credit Scoring Demo</title>
+<style>
+  :root {
+    --bg: #f2f4f8;
+    --card: #ffffff;
+    --text: #1a1d24;
+    --muted: #666e7d;
+    --border: #e3e6ec;
+    --accent: #4f6bed;
+    --accent-dark: #3a52c4;
+    --danger: #e0473f;
+    --safe: #1f9d55;
+    --shadow: 0 1px 2px rgba(16, 24, 40, .04), 0 8px 24px rgba(16, 24, 40, .08);
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161b;
+      --card: #1c1f26;
+      --text: #eef0f4;
+      --muted: #9aa2b1;
+      --border: #2b2f3a;
+      --accent: #7b93ff;
+      --accent-dark: #97aaff;
+      --danger: #ff6b62;
+      --safe: #37c777;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .35);
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding-block: 32px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding-inline: 16px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 28px;
+  }
+  header h1 {
+    margin: 0 0 4px;
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
+  }
+  header p {
+    margin: 0 0 24px;
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+  fieldset {
+    border: none;
+    padding: 0;
+    margin: 0 0 20px;
+  }
+  legend {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    margin-bottom: 10px;
+    padding: 0;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+  }
+  label {
+    display: block;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+  .hint {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  input[type="number"] {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 0.95rem;
+  }
+  input[type="number"]:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+  }
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  button {
+    appearance: none;
+    border: none;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 11px 22px;
+    cursor: pointer;
+    transition: background .15s ease, transform .05s ease;
+  }
+  button:hover { background: var(--accent-dark); }
+  button:active { transform: scale(0.98); }
+  button:disabled { opacity: 0.6; cursor: default; }
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.4);
+    border-top-color: #fff;
+    animation: spin .7s linear infinite;
+    display: none;
+  }
+  button[data-loading="true"] .spinner { display: inline-block; }
+  button[data-loading="true"] .btn-label { display: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #error-banner {
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--danger) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
+    color: var(--danger);
+    font-size: 0.85rem;
+    white-space: pre-line;
+  }
+
+  #result {
+    margin-top: 26px;
+    padding-top: 22px;
+    border-top: 1px solid var(--border);
+  }
+  .score-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .score-row .label {
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .score-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .meter {
+    height: 10px;
+    border-radius: 6px;
+    background: var(--border);
+    overflow: hidden;
+    margin-bottom: 22px;
+  }
+  .meter > div {
+    height: 100%;
+    width: 0%;
+    border-radius: 6px;
+    transition: width .5s ease;
+  }
+  .factors h3 {
+    font-size: 0.9rem;
+    margin: 0 0 12px;
+  }
+  .factor-row {
+    display: grid;
+    grid-template-columns: 1fr 140px 60px;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 0.82rem;
+  }
+  .factor-name {
+    color: var(--text);
+    overflow-wrap: anywhere;
+  }
+  .factor-bar-track {
+    height: 8px;
+    border-radius: 4px;
+    background: var(--border);
+    overflow: hidden;
+  }
+  .factor-bar {
+    height: 100%;
+    border-radius: 4px;
+    width: 0%;
+    transition: width .4s ease;
+  }
+  .factor-val {
+    text-align: right;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .legend-note {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <header>
+      <h1>Credit Scoring</h1>
+      <p>A learning-project LightGBM model that estimates the probability of serious delinquency on a loan within two years, and shows which features drove the decision most.</p>
+    </header>
+
+    <form id="predict-form">
+      <fieldset>
+        <legend>Borrower</legend>
+        <div class="grid">
+          <div>
+            <label for="age">Age</label>
+            <input type="number" id="age" min="18" max="110" step="1" value="45" required>
+          </div>
+          <div>
+            <label for="MonthlyIncome">Monthly income</label>
+            <input type="number" id="MonthlyIncome" min="0" step="100" value="5000">
+            <span class="hint">Can be left empty</span>
+          </div>
+          <div>
+            <label for="NumberOfDependents">Number of dependents</label>
+            <input type="number" id="NumberOfDependents" min="0" step="1" value="2">
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Credit load</legend>
+        <div class="grid">
+          <div>
+            <label for="RevolvingUtilizationOfUnsecuredLines">Revolving utilization of unsecured lines</label>
+            <input type="number" id="RevolvingUtilizationOfUnsecuredLines" min="0" step="0.01" value="0.5" required>
+            <span class="hint">Share of credit limit used, usually 0–1</span>
+          </div>
+          <div>
+            <label for="DebtRatio">Debt ratio</label>
+            <input type="number" id="DebtRatio" min="0" step="0.01" value="0.3" required>
+          </div>
+          <div>
+            <label for="NumberOfOpenCreditLinesAndLoans">Open credit lines and loans</label>
+            <input type="number" id="NumberOfOpenCreditLinesAndLoans" min="0" step="1" value="5" required>
+          </div>
+          <div>
+            <label for="NumberRealEstateLoansOrLines">Real estate loans or lines</label>
+            <input type="number" id="NumberRealEstateLoansOrLines" min="0" step="1" value="1" required>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Late payment history</legend>
+        <div class="grid">
+          <div>
+            <label for="NumberOfTime30-59DaysPastDueNotWorse">30–59 days late (times)</label>
+            <input type="number" id="NumberOfTime30-59DaysPastDueNotWorse" min="0" step="1" value="0" required>
+          </div>
+          <div>
+            <label for="NumberOfTime60-89DaysPastDueNotWorse">60–89 days late (times)</label>
+            <input type="number" id="NumberOfTime60-89DaysPastDueNotWorse" min="0" step="1" value="0" required>
+          </div>
+          <div>
+            <label for="NumberOfTimes90DaysLate">90+ days late (times)</label>
+            <input type="number" id="NumberOfTimes90DaysLate" min="0" step="1" value="0" required>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="actions">
+        <button type="submit" id="submit-btn">
+          <span class="spinner"></span>
+          <span class="btn-label">Predict</span>
+        </button>
+      </div>
+    </form>
+
+    <div id="error-banner" hidden></div>
+
+    <section id="result" hidden>
+      <div class="score-row">
+        <span class="label">Probability of serious delinquency</span>
+        <span class="score-value" id="score-value">0%</span>
+      </div>
+      <div class="meter"><div id="score-bar"></div></div>
+
+      <div class="factors">
+        <h3>What drove this score</h3>
+        <div id="factors-list"></div>
+        <p class="legend-note">Red increases risk, green decreases it (based on SHAP values).</p>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById('predict-form');
+  const submitBtn = document.getElementById('submit-btn');
+  const errorBanner = document.getElementById('error-banner');
+  const result = document.getElementById('result');
+  const scoreValue = document.getElementById('score-value');
+  const scoreBar = document.getElementById('score-bar');
+  const factorsList = document.getElementById('factors-list');
+
+  const numberField = (id) => {
+    const el = document.getElementById(id);
+    if (el.value === '') return null;
+    return Number(el.value);
+  };
+
+  function riskColor(score) {
+    const t = Math.min(Math.max(score / 0.5, 0), 1);
+    const hue = 120 - t * 120;
+    return `hsl(${hue}, 70%, 45%)`;
+  }
+
+  function showError(message) {
+    errorBanner.textContent = message;
+    errorBanner.hidden = false;
+  }
+
+  function clearError() {
+    errorBanner.hidden = true;
+    errorBanner.textContent = '';
+  }
+
+  function formatValidationError(detail) {
+    if (!Array.isArray(detail)) return 'Could not get a prediction. Please check the values you entered.';
+    return detail
+      .map((d) => `${(d.loc || []).slice(-1)[0] ?? 'field'}: ${d.msg}`)
+      .join('\n');
+  }
+
+  function renderResult(data) {
+    const pct = data.score * 100;
+    scoreValue.textContent = `${pct.toFixed(1)}%`;
+    scoreValue.style.color = riskColor(data.score);
+    scoreBar.style.width = `${Math.min(pct, 100)}%`;
+    scoreBar.style.background = riskColor(data.score);
+
+    factorsList.innerHTML = '';
+    const maxAbs = Math.max(...data.risk_factors.map((f) => Math.abs(f.contribution)), 1e-9);
+    for (const f of data.risk_factors) {
+      const row = document.createElement('div');
+      row.className = 'factor-row';
+
+      const name = document.createElement('span');
+      name.className = 'factor-name';
+      name.textContent = f.feature;
+
+      const track = document.createElement('div');
+      track.className = 'factor-bar-track';
+      const bar = document.createElement('div');
+      bar.className = 'factor-bar';
+      bar.style.width = `${(Math.abs(f.contribution) / maxAbs) * 100}%`;
+      bar.style.background = f.contribution >= 0 ? 'var(--danger)' : 'var(--safe)';
+      track.appendChild(bar);
+
+      const val = document.createElement('span');
+      val.className = 'factor-val';
+      val.textContent = f.contribution.toFixed(3);
+
+      row.append(name, track, val);
+      factorsList.appendChild(row);
+    }
+
+    result.hidden = false;
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearError();
+    result.hidden = true;
+    submitBtn.disabled = true;
+    submitBtn.dataset.loading = 'true';
+
+    const payload = {
+      RevolvingUtilizationOfUnsecuredLines: numberField('RevolvingUtilizationOfUnsecuredLines'),
+      age: numberField('age'),
+      'NumberOfTime30-59DaysPastDueNotWorse': numberField('NumberOfTime30-59DaysPastDueNotWorse'),
+      DebtRatio: numberField('DebtRatio'),
+      MonthlyIncome: numberField('MonthlyIncome'),
+      NumberOfOpenCreditLinesAndLoans: numberField('NumberOfOpenCreditLinesAndLoans'),
+      NumberOfTimes90DaysLate: numberField('NumberOfTimes90DaysLate'),
+      NumberRealEstateLoansOrLines: numberField('NumberRealEstateLoansOrLines'),
+      'NumberOfTime60-89DaysPastDueNotWorse': numberField('NumberOfTime60-89DaysPastDueNotWorse'),
+      NumberOfDependents: numberField('NumberOfDependents'),
+    };
+
+    try {
+      const res = await fetch('/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new Error(formatValidationError(body && body.detail));
+      }
+
+      const data = await res.json();
+      renderResult(data);
+    } catch (err) {
+      showError(err.message || 'Could not get a prediction.');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.dataset.loading = 'false';
+    }
+  });
+</script>
+</body>
+</html>

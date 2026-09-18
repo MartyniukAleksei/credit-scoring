@@ -1,9 +1,12 @@
+from pathlib import Path
+
 import pandas as pd
 import joblib
 from fastapi import FastAPI, status
+from fastapi.staticfiles import StaticFiles
 from credit_scoring.paths import MODEL_PATH
 from credit_scoring.api.schemas import BorrowerFeatures
-import shap 
+import shap
 
 def explain_denial(shap_values_row, feature_names, top_k=4):
     contributions = list(zip(feature_names, shap_values_row.values))
@@ -39,9 +42,12 @@ def predict(payload: BorrowerFeatures) -> dict:
     shap_values = explainer(feature_vector_clipper)
     
     return {
-        'score': float(pred[0]), 
+        'score': float(pred[0]),
         'risk_factors': [
             {'feature': name, 'contribution': float(val)}
             for name, val in explain_denial(shap_values[0], shap_values[0].feature_names, 10)
         ],
     }
+
+STATIC_DIR = Path(__file__).resolve().parent / "static"
+app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
