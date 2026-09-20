@@ -10,6 +10,7 @@ __pycache__/
 *.egg-info/
 build/
 dist/
+.coverage
 
 # данные — не коммитим сами файлы
 data/raw/*
@@ -19,9 +20,11 @@ data/processed/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 
-# models
+# models — lgbm_pipeline.joblib is committed too so Railway (deploys
+# straight from the GitHub source, no dvc pull step) has it in the build context
 models/*
 !models/*.dvc
+!models/lgbm_pipeline.joblib
 
 # jupyter
 .ipynb_checkpoints/
