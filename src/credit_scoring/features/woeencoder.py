@@ -37,14 +37,13 @@ class WOEEncoder(BaseEstimator, TransformerMixin):
     ) -> dict:
         values = X[col]
         sentinels = (self.sentinel_values or {}).get(col, [])
-        
+
+        woe_map: dict[str | int, float] = {}
         if sentinels:
             sentinel_mask = values.isin(sentinels)
-            woe_map = {"sentinel": self._woe_for_mask(sentinel_mask, y, all_good, all_bad)}
+            woe_map["sentinel"] = self._woe_for_mask(sentinel_mask, y, all_good, all_bad)
             values = values[~sentinel_mask]
             y = y[~sentinel_mask]
-        else:
-            woe_map = {}
         
         for k in range(self.discrete_tail_threshold):
             mask = values == k

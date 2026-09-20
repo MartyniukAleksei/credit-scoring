@@ -1,3 +1,4 @@
+from typing import Any
 import optuna
 import pandas as pd
 from sklearn.model_selection import StratifiedKFold, cross_val_score
@@ -11,7 +12,7 @@ from pathlib import Path
 from credit_scoring.paths import PROJECT_ROOT
 
 def objective(trial: optuna.Trial, X: pd.DataFrame, y: pd.Series) -> float:
-    params = {
+    params: dict[str, Any] = {
         "num_leaves": trial.suggest_int("num_leaves", 8, 128),
         "max_depth": trial.suggest_int("max_depth", 3, 12),
         "min_child_samples": trial. suggest_int("min_child_samples", 10, 200),

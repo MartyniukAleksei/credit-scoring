@@ -16,6 +16,9 @@ dependencies = [
     "fastapi",
     "pydantic",
     "uvicorn[standard]",
+    "pandera",
+    "optuna",
+    "prefect",
 ]
 
 [project.optional-dependencies]
@@ -24,6 +27,9 @@ dev = [
     "pytest-cov",
     "mypy",
 ]
+
+[tool.mypy]
+ignore_missing_imports = true
 
 [tool.setuptools.packages.find]
 where = ["src"]
