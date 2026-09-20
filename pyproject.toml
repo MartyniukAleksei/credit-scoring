@@ -27,3 +27,8 @@ dev = [
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+markers = [
+    "requires_data: нужен реальный DVC-датасет на диске (пропускается в CI)",
+]
