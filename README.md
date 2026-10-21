@@ -1,5 +1,7 @@
 # Credit Scoring System
 
+**Live demo:** https://credit-scoring-production-3412.up.railway.app
+
 Production-style ML system that predicts the probability of serious loan delinquency
 (90+ days past due within 2 years) from a borrower's credit profile, and explains
 *why* the model flagged a given applicant as risky.
